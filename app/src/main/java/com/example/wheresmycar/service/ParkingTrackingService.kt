@@ -147,7 +147,7 @@ class ParkingTrackingService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Where's My Car")
             .setContentText(contentText)
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // You may need to add an icon
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
             .setSilent(true)
