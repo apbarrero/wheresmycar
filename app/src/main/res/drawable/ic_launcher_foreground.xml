@@ -1,62 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    
+
     <!-- Location pin -->
-    <path android:fillColor="#FF5722"
+    <path 
+        android:fillColor="#FF5722"
         android:pathData="M75,20c-10,0 -18,8 -18,18c0,15 18,35 18,35s18,-20 18,-35C93,28 85,20 75,20z" />
-    
-    <!-- Location pin center dot -->
-    <circle android:fillColor="#FFFFFF"
-        android:cx="75"
-        android:cy="38"
-        android:radius="7" />
-    
-    <!-- Car body main -->
-    <path android:fillColor="#1976D2"
+
+    <!-- Location pin center (circle as path) -->
+    <path 
+        android:fillColor="#FFFFFF"
+        android:pathData="M75,32a6,6 0,1 1,0 12a6,6 0,1 1,0 -12z" />
+
+    <!-- Car body -->
+    <path 
+        android:fillColor="#1976D2"
         android:pathData="M15,55h35c3,0 5,2 6,4l5,10v15c0,3 -2,5 -5,5h-5c0,4 -3,7 -7,7s-7,-3 -7,-7H25c0,4 -3,7 -7,7s-7,-3 -7,-7h-5c-3,0 -5,-2 -5,-5V69l5,-10C7,57 10,55 15,55z" />
-    
+
     <!-- Car windshield -->
-    <path android:fillColor="#E3F2FD"
-        android:pathData="M18,57h32c2,0 3,1 4,2l3,6H15l3,-6C19,58 18.5,57 18,57z" />
+    <path 
+        android:fillColor="#E3F2FD"
+        android:pathData="M18,57h30c2,0 3,1 4,2l3,6H15l3,-6C19,58 18.5,57 18,57z" />
+
+    <!-- Left car wheel -->
+    <path 
+        android:fillColor="#424242"
+        android:pathData="M25,70a7,7 0,1 1,0 14a7,7 0,1 1,0 -14z" />
     
-    <!-- Car wheels -->
-    <circle android:fillColor="#424242"
-        android:cx="25"
-        android:cy="77"
-        android:radius="8" />
-    <circle android:fillColor="#424242"
-        android:cx="50"
-        android:cy="77"
-        android:radius="8" />
+    <!-- Right car wheel -->
+    <path 
+        android:fillColor="#424242"
+        android:pathData="M48,70a7,7 0,1 1,0 14a7,7 0,1 1,0 -14z" />
+
+    <!-- Left wheel center -->
+    <path 
+        android:fillColor="#757575"
+        android:pathData="M25,74a3,3 0,1 1,0 6a3,3 0,1 1,0 -6z" />
     
-    <!-- Car wheel centers -->
-    <circle android:fillColor="#757575"
-        android:cx="25"
-        android:cy="77"
-        android:radius="4" />
-    <circle android:fillColor="#757575"
-        android:cx="50"
-        android:cy="77"
-        android:radius="4" />
-    
-    <!-- Car headlights -->
-    <circle android:fillColor="#FFF59D"
-        android:cx="12"
-        android:cy="67"
-        android:radius="3" />
-    
-    <!-- Connection line from car to pin -->
-    <path android:fillColor="#4CAF50"
-        android:pathData="M60,60L68,50"
-        android:strokeWidth="4"
+    <!-- Right wheel center -->
+    <path 
+        android:fillColor="#757575"
+        android:pathData="M48,74a3,3 0,1 1,0 6a3,3 0,1 1,0 -6z" />
+
+    <!-- Headlight -->
+    <path 
+        android:fillColor="#FFF59D"
+        android:pathData="M12,63a2,2 0,1 1,0 4a2,2 0,1 1,0 -4z" />
+
+    <!-- Connection line -->
+    <path 
+        android:fillColor="@android:color/transparent"
         android:strokeColor="#4CAF50"
-        android:strokeLineCap="round" />
-    
-    <!-- Small Bluetooth symbol on car -->
-    <path android:fillColor="#FFFFFF"
-        android:pathData="M32,62l2,-2l-1,-1l1,-1l-2,-2v2l-1,-1l1,2l-1,2l1,-1v2zM33,59l0.5,0.5L33,60V59zM33,63v-1l0.5,0.5L33,63z" />
-    
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M58,60L68,48" />
+
 </vector>
