@@ -5,26 +5,36 @@ plugins {
 }
 
 android {
-    namespace = "com.example.wheresmycar"
-    compileSdk = 36
+    namespace = "com.apbarrero.wheresmycar"
+    compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.wheresmycar"
+        applicationId = "com.apbarrero.wheresmycar"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 34  // Use stable API level
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Add resource configurations for smaller APK
+        resourceConfigurations += listOf("en", "es")  // Add languages you support
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true  // Enable code shrinking
+            isShrinkResources = true  // Remove unused resources
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Optional: Enable R8 full mode for better optimization
+            // isDebuggable = false (default for release)
+        }
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
         }
     }
     compileOptions {
