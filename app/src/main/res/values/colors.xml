@@ -7,4 +7,19 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- App Icon Colors -->
+    <color name="icon_bg_start">#FF1E3A8A</color>        <!-- Deep Blue -->
+    <color name="icon_bg_middle">#FF3B82F6</color>       <!-- Medium Blue -->
+    <color name="icon_bg_end">#FF60A5FA</color>          <!-- Light Blue -->
+    <color name="icon_road">#FFFFFF</color>             <!-- White Road -->
+    <color name="icon_road_lines">#FFE5E7EB</color>      <!-- Light Gray Lines -->
+    <color name="icon_car_body">#FF059669</color>        <!-- Emerald Green -->
+    <color name="icon_car_accent">#FF10B981</color>      <!-- Light Emerald -->
+    <color name="icon_car_windshield">#FFE0F2FE</color>   <!-- Very Light Blue -->
+    <color name="icon_car_wheels">#FF374151</color>      <!-- Dark Gray -->
+    <color name="icon_car_wheel_rims">#FF6B7280</color>   <!-- Medium Gray -->
+    <color name="icon_location_pin">#FFEF4444</color>     <!-- Bright Red -->
+    <color name="icon_location_shadow">#FFDC2626</color>  <!-- Darker Red -->
+    <color name="icon_connection">#FF10B981</color>       <!-- Emerald Connection -->
 </resources>

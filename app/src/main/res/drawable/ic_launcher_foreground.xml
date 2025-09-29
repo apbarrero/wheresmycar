@@ -5,57 +5,46 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Location pin -->
+    <!-- Parking sign background (blue square - full size) -->
     <path 
-        android:fillColor="#FF5722"
-        android:pathData="M75,20c-10,0 -18,8 -18,18c0,15 18,35 18,35s18,-20 18,-35C93,28 85,20 75,20z" />
+        android:fillColor="@color/icon_bg_middle"
+        android:pathData="M18,18h72c6,0 12,6 12,12v48c0,6 -6,12 -12,12H18c-6,0 -12,-6 -12,-12V30C6,24 12,18 18,18z" />
 
-    <!-- Location pin center (circle as path) -->
-    <path 
-        android:fillColor="#FFFFFF"
-        android:pathData="M75,32a6,6 0,1 1,0 12a6,6 0,1 1,0 -12z" />
-
-    <!-- Car body -->
-    <path 
-        android:fillColor="#1976D2"
-        android:pathData="M15,55h35c3,0 5,2 6,4l5,10v15c0,3 -2,5 -5,5h-5c0,4 -3,7 -7,7s-7,-3 -7,-7H25c0,4 -3,7 -7,7s-7,-3 -7,-7h-5c-3,0 -5,-2 -5,-5V69l5,-10C7,57 10,55 15,55z" />
-
-    <!-- Car windshield -->
-    <path 
-        android:fillColor="#E3F2FD"
-        android:pathData="M18,57h30c2,0 3,1 4,2l3,6H15l3,-6C19,58 18.5,57 18,57z" />
-
-    <!-- Left car wheel -->
-    <path 
-        android:fillColor="#424242"
-        android:pathData="M25,70a7,7 0,1 1,0 14a7,7 0,1 1,0 -14z" />
-    
-    <!-- Right car wheel -->
-    <path 
-        android:fillColor="#424242"
-        android:pathData="M48,70a7,7 0,1 1,0 14a7,7 0,1 1,0 -14z" />
-
-    <!-- Left wheel center -->
-    <path 
-        android:fillColor="#757575"
-        android:pathData="M25,74a3,3 0,1 1,0 6a3,3 0,1 1,0 -6z" />
-    
-    <!-- Right wheel center -->
-    <path 
-        android:fillColor="#757575"
-        android:pathData="M48,74a3,3 0,1 1,0 6a3,3 0,1 1,0 -6z" />
-
-    <!-- Headlight -->
-    <path 
-        android:fillColor="#FFF59D"
-        android:pathData="M12,63a2,2 0,1 1,0 4a2,2 0,1 1,0 -4z" />
-
-    <!-- Connection line -->
+    <!-- Parking sign white border -->
     <path 
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#4CAF50"
-        android:strokeWidth="3"
-        android:strokeLineCap="round"
-        android:pathData="M58,60L68,48" />
+        android:strokeColor="@color/white"
+        android:strokeWidth="4"
+        android:pathData="M18,18h72c6,0 12,6 12,12v48c0,6 -6,12 -12,12H18c-6,0 -12,-6 -12,-12V30C6,24 12,18 18,18z" />
+
+    <!-- Letter P - vertical stroke -->
+    <path 
+        android:fillColor="@color/white"
+        android:pathData="M28,32h8v44h-8z" />
+        
+    <!-- Letter P - top horizontal stroke -->
+    <path 
+        android:fillColor="@color/white"
+        android:pathData="M36,32h24c4,0 8,4 8,8v8c0,4 -4,8 -8,8H36z" />
+        
+    <!-- Letter P - middle horizontal stroke -->
+    <path 
+        android:fillColor="@color/white"
+        android:pathData="M36,48h16v8h-16z" />
+
+    <!-- P's hollow belly (D-shaped cutout) -->
+    <path 
+        android:fillColor="@color/icon_bg_middle"
+        android:pathData="M36,38h22c2,0 4,2 4,4v4c0,2 -2,4 -4,4H36z" />
+
+    <!-- Small location pin (inside P's belly) -->
+    <path 
+        android:fillColor="@color/icon_location_pin"
+        android:pathData="M58,58c-3,0 -5.5,2.5 -5.5,5.5c0,4.5 5.5,10 5.5,10s5.5,-5.5 5.5,-10C63.5,60.5 61,58 58,58z" />
+
+    <!-- Location pin center -->
+    <path 
+        android:fillColor="@color/white"
+        android:pathData="M58,62a1.5,1.5 0,1 1,0 3a1.5,1.5 0,1 1,0 -3z" />
 
 </vector>
