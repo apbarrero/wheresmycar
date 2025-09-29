@@ -112,7 +112,7 @@ The project includes unit tests for core functionality and UI tests for user int
 ./gradlew connectedAndroidTest
 
 # Run specific instrumentation test class
-./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.example.wheresmycar.MainActivityTest
+./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.apbarrero.wheresmycar.MainActivityTest
 ```
 
 #### Manual Testing Scenarios

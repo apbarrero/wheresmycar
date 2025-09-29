@@ -1,4 +1,4 @@
-package com.example.wheresmycar.ui
+package com.apbarrero.wheresmycar.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.wheresmycar.data.BluetoothDeviceInfo
+import com.apbarrero.wheresmycar.data.BluetoothDeviceInfo
 
 @Composable
 fun DeviceSelectionDialog(

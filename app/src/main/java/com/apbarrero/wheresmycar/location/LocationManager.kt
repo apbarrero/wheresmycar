@@ -1,4 +1,4 @@
-package com.example.wheresmycar.location
+package com.apbarrero.wheresmycar.location
 
 import android.Manifest
 import android.content.Context

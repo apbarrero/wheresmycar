@@ -1,4 +1,4 @@
-package com.example.wheresmycar.ui
+package com.apbarrero.wheresmycar.ui
 
 import android.Manifest
 import android.content.Intent
@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.wheresmycar.data.ParkingLocation
+import com.apbarrero.wheresmycar.data.ParkingLocation
 import com.google.accompanist.permissions.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -189,9 +189,9 @@ private fun MainContent(
                 )
                 
                 val connectionStatus = when (uiState.connectionState) {
-                    com.example.wheresmycar.bluetooth.BluetoothManager.ConnectionState.Connected -> "🔗 Connected"
-                    com.example.wheresmycar.bluetooth.BluetoothManager.ConnectionState.Disconnected -> "📴 Disconnected"
-                    com.example.wheresmycar.bluetooth.BluetoothManager.ConnectionState.Unknown -> "❓ Unknown"
+                    com.apbarrero.wheresmycar.bluetooth.BluetoothManager.ConnectionState.Connected -> "🔗 Connected"
+                    com.apbarrero.wheresmycar.bluetooth.BluetoothManager.ConnectionState.Disconnected -> "📴 Disconnected"
+                    com.apbarrero.wheresmycar.bluetooth.BluetoothManager.ConnectionState.Unknown -> "❓ Unknown"
                 }
                 
                 Text(

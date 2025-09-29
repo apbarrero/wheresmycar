@@ -1,4 +1,4 @@
-package com.example.wheresmycar.ui.theme
+package com.apbarrero.wheresmycar.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

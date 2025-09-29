@@ -1,4 +1,4 @@
-package com.example.wheresmycar.service
+package com.apbarrero.wheresmycar.service
 
 import android.app.*
 import android.bluetooth.BluetoothDevice
@@ -9,18 +9,18 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import com.example.wheresmycar.R
-import com.example.wheresmycar.data.ParkingLocation
-import com.example.wheresmycar.data.Repository
-import com.example.wheresmycar.location.LocationManager
+import com.apbarrero.wheresmycar.R
+import com.apbarrero.wheresmycar.data.ParkingLocation
+import com.apbarrero.wheresmycar.data.Repository
+import com.apbarrero.wheresmycar.location.LocationManager
 import kotlinx.coroutines.*
 import java.util.*
 
 class ParkingTrackingService : Service() {
     
     companion object {
-        const val ACTION_START_TRACKING = "com.example.wheresmycar.START_TRACKING"
-        const val ACTION_STOP_TRACKING = "com.example.wheresmycar.STOP_TRACKING"
+        const val ACTION_START_TRACKING = "com.apbarrero.wheresmycar.START_TRACKING"
+        const val ACTION_STOP_TRACKING = "com.apbarrero.wheresmycar.STOP_TRACKING"
         const val EXTRA_DEVICE_ADDRESS = "device_address"
         const val EXTRA_DEVICE_NAME = "device_name"
         

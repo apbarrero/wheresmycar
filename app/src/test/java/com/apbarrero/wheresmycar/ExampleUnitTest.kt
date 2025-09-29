@@ -1,4 +1,4 @@
-package com.example.wheresmycar
+package com.apbarrero.wheresmycar
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.example.wheresmycar.ui.theme
+package com.apbarrero.wheresmycar.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

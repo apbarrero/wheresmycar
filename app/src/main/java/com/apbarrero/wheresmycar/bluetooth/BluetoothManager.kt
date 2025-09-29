@@ -1,4 +1,4 @@
-package com.example.wheresmycar.bluetooth
+package com.apbarrero.wheresmycar.bluetooth
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
@@ -10,7 +10,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
-import com.example.wheresmycar.data.BluetoothDeviceInfo
+import com.apbarrero.wheresmycar.data.BluetoothDeviceInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

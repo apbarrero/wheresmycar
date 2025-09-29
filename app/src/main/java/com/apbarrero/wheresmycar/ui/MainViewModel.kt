@@ -1,15 +1,15 @@
-package com.example.wheresmycar.ui
+package com.apbarrero.wheresmycar.ui
 
 import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wheresmycar.bluetooth.BluetoothManager
-import com.example.wheresmycar.data.AppSettings
-import com.example.wheresmycar.data.BluetoothDeviceInfo
-import com.example.wheresmycar.data.Repository
-import com.example.wheresmycar.service.ParkingTrackingService
+import com.apbarrero.wheresmycar.bluetooth.BluetoothManager
+import com.apbarrero.wheresmycar.data.AppSettings
+import com.apbarrero.wheresmycar.data.BluetoothDeviceInfo
+import com.apbarrero.wheresmycar.data.Repository
+import com.apbarrero.wheresmycar.service.ParkingTrackingService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

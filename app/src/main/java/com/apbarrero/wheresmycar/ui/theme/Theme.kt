@@ -1,4 +1,4 @@
-package com.example.wheresmycar.ui.theme
+package com.apbarrero.wheresmycar.ui.theme
 
 import android.app.Activity
 import android.os.Build
