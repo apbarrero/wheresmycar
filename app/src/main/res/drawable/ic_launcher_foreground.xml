@@ -8,19 +8,19 @@
     <!-- Parking sign background (blue square - proper size) -->
     <path 
         android:fillColor="@color/icon_bg_middle"
-        android:pathData="M27,27h54c4,0 8,4 8,8v46c0,4 -4,8 -8,8H27c-4,0 -8,-4 -8,-8V35C19,31 23,27 27,27z" />
+        android:pathData="M31,31h46c4,0 8,4 8,8v30c0,4 -4,8 -8,8H31c-4,0 -8,-4 -8,-8V39C23,35 27,31 31,31z" />
 
     <!-- Parking sign white border -->
     <path 
         android:fillColor="@android:color/transparent"
         android:strokeColor="@color/white"
         android:strokeWidth="3"
-        android:pathData="M27,27h54c4,0 8,4 8,8v46c0,4 -4,8 -8,8H27c-4,0 -8,-4 -8,-8V35C19,31 23,27 27,27z" />
+        android:pathData="M31,31h46c4,0 8,4 8,8v30c0,4 -4,8 -8,8H31c-4,0 -8,-4 -8,-8V39C23,35 27,31 31,31z" />
 
     <!-- Letter P - vertical stroke -->
     <path 
         android:fillColor="@color/white"
-        android:pathData="M35,35h10v46h-10z" />
+        android:pathData="M35,35h10v38h-10z" />
         
     <!-- Letter P - top horizontal stroke -->
     <path 
@@ -35,11 +35,11 @@
     <!-- Location pin (inside P's belly) -->
     <path 
         android:fillColor="@color/icon_location_pin"
-        android:pathData="M60,63c-4,0 -7,3 -7,7c0,6 7,12 7,12s7,-6 7,-12C67,66 64,63 60,63z" />
+        android:pathData="M60,55c-4,0 -7,3 -7,7c0,6 7,12 7,12s7,-6 7,-12C67,58 64,55 60,55z" />
 
     <!-- Location pin center -->
     <path 
         android:fillColor="@color/white"
-        android:pathData="M60,68a2,2 0,1 1,0 4a2,2 0,1 1,0 -4z" />
+        android:pathData="M60,60a2,2 0,1 1,0 4a2,2 0,1 1,0 -4z" />
 
 </vector>

@@ -22,36 +22,4 @@
         </aapt:attr>
     </path>
 
-    <!-- Road surface -->
-    <path
-        android:fillColor="@color/icon_road"
-        android:pathData="M0,85h108v16h-108z" />
-        
-    <!-- Road center dashed line -->
-    <path
-        android:fillColor="@color/icon_road_lines"
-        android:pathData="M8,92h8v2h-8z" />
-    <path
-        android:fillColor="@color/icon_road_lines"
-        android:pathData="M24,92h8v2h-8z" />
-    <path
-        android:fillColor="@color/icon_road_lines"
-        android:pathData="M40,92h8v2h-8z" />
-    <path
-        android:fillColor="@color/icon_road_lines"
-        android:pathData="M56,92h8v2h-8z" />
-    <path
-        android:fillColor="@color/icon_road_lines"
-        android:pathData="M72,92h8v2h-8z" />
-    <path
-        android:fillColor="@color/icon_road_lines"
-        android:pathData="M88,92h8v2h-8z" />
-
-    <!-- Subtle grid pattern for depth -->
-    <path
-        android:fillColor="@android:color/transparent"
-        android:strokeColor="#1A000000"
-        android:strokeWidth="0.5"
-        android:pathData="M0,27L108,27M0,54L108,54M27,0L27,85M54,0L54,85M81,0L81,85" />
-
 </vector>
