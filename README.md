@@ -17,16 +17,19 @@ Perfect for busy parking lots, unfamiliar areas, or just everyday convenience!
 
 - 🔵 **Bluetooth Device Selection**: Choose any Bluetooth device to track
 - 📍 **Automatic Location Capture**: GPS location saved on device disconnect
-- 🔄 **Background Monitoring**: Works even when the app is closed
+- 🔄 **Enhanced Background Monitoring**: Resilient service that survives app kills and reboots
+- 🛡️ **Battery Optimization Handling**: Automatic exemption requests and wake lock management
+- 🔄 **Multi-Layer Service Recovery**: JobScheduler, AlarmManager, and boot receiver restart mechanisms
 - 📱 **Modern UI**: Clean Material Design 3 interface with Jetpack Compose
 - 🗺️ **Maps Integration**: Open saved location directly in your maps app
-- 🔔 **Smart Notifications**: Get notified when locations are saved
-- ⚡ **Battery Optimized**: Efficient background service with minimal battery impact
+- 🔔 **Smart Notifications**: High-priority notifications with real-time status updates
+- ⚡ **Robust Background Operation**: Survives doze mode, battery optimization, and long-term usage
+- 🎨 **Professional Icon**: Clean parking sign design with location pin
 
 ## 🏗️ Project Structure
 
 ```
-app/src/main/java/com/example/wheresmycar/
+app/src/main/java/com/apbarrero/wheresmycar/
 ├── 📂 data/
 │   ├── Models.kt                    # Data classes (ParkingLocation, BluetoothDeviceInfo, AppSettings)
 │   └── Repository.kt                # Data persistence with DataStore
@@ -35,7 +38,9 @@ app/src/main/java/com/example/wheresmycar/
 ├── 📂 location/
 │   └── LocationManager.kt           # GPS location services with Google Play Services
 ├── 📂 service/
-│   └── ParkingTrackingService.kt    # Foreground service for background monitoring
+│   ├── ParkingTrackingService.kt    # Enhanced foreground service with wake locks
+│   ├── BootReceiver.kt              # Restart service after device reboot
+│   └── ServiceRestartJob.kt         # JobScheduler for automatic service recovery
 ├── 📂 ui/
 │   ├── MainViewModel.kt             # ViewModel with app state management
 │   ├── MainScreen.kt                # Main UI screen with Compose
@@ -48,7 +53,9 @@ app/src/main/java/com/example/wheresmycar/
 - **Repository**: Handles data persistence using Android DataStore
 - **BluetoothManager**: Manages device discovery and connection state monitoring
 - **LocationManager**: Wraps Google Play Services for GPS location
-- **ParkingTrackingService**: Background service that monitors disconnections
+- **ParkingTrackingService**: Enhanced foreground service with wake locks and resilience features
+- **BootReceiver**: Automatically restarts tracking service after device reboot
+- **ServiceRestartJob**: JobScheduler-based service recovery for long-term reliability
 - **MainViewModel**: Manages UI state and coordinates between components
 - **Compose UI**: Modern declarative UI with Material Design 3
 
@@ -80,13 +87,23 @@ app/src/main/java/com/example/wheresmycar/
    - Bluetooth permissions (for device discovery and monitoring)
    - Location permissions (for GPS access)
    - Background location permission (for continuous monitoring)
+   - Battery optimization exemption (for reliable background operation)
 
-2. **Select your Bluetooth device**:
+2. **Configure battery optimization**:
+   - When prompted, allow the app to ignore battery optimizations
+   - This is crucial for long-term background operation
+   - The app will automatically request this exemption
+
+3. **Select your Bluetooth device**:
    - Tap "Start Tracking" or "Change Device"
    - Choose the device connected to your car
    - Common options: car stereo, OBD-II adapter, Bluetooth FM transmitter
 
-3. **Start tracking** and test by connecting/disconnecting the device
+4. **Start tracking** and test by connecting/disconnecting the device
+
+5. **Keep the notification visible**:
+   - Don't swipe away the "Where's My Car - Active" notification
+   - This ensures the service stays running in the background
 
 ## 🧪 Testing
 
@@ -158,11 +175,20 @@ For testing purposes, you can use:
 
 The app requires these permissions for full functionality:
 
+**Bluetooth Permissions:**
 - `BLUETOOTH` & `BLUETOOTH_ADMIN` - Basic Bluetooth access
 - `BLUETOOTH_CONNECT` & `BLUETOOTH_SCAN` - Android 12+ Bluetooth permissions
+
+**Location Permissions:**
 - `ACCESS_FINE_LOCATION` & `ACCESS_COARSE_LOCATION` - GPS location access
 - `ACCESS_BACKGROUND_LOCATION` - Background location (Android 10+)
+
+**Service & Background Permissions:**
 - `FOREGROUND_SERVICE` & `FOREGROUND_SERVICE_LOCATION` - Background monitoring
+- `WAKE_LOCK` - Keep CPU awake for Bluetooth monitoring
+- `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` - Request battery optimization exemption
+- `SCHEDULE_EXACT_ALARM` - Precise service restart scheduling
+- `RECEIVE_BOOT_COMPLETED` - Restart service after device reboot
 
 ### Hardware Requirements
 
@@ -213,21 +239,44 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Ensure all Bluetooth permissions are granted
 - Check that the device actually disconnects (not just pauses)
 - Verify background app restrictions are disabled
+- Confirm battery optimization is disabled for the app
 
 **Location not accurate**:
 - Ensure location permissions are granted
 - Check that GPS is enabled on the device
 - Test in an area with good GPS signal
 
-**Background service stops**:
-- Disable battery optimization for the app
+**Background service stops after a day**:
+- ⚡ **Most Important**: Disable battery optimization for the app
+- Keep the "Where's My Car - Active" notification visible
+- Add the app to your device's "Auto-start" apps list (varies by manufacturer)
 - Check that background app refresh is enabled
-- Verify foreground service notification is visible
+- Ensure wake lock permission is granted
+- Verify the app isn't being killed by aggressive battery managers
+
+**Service doesn't restart after reboot**:
+- Ensure RECEIVE_BOOT_COMPLETED permission is granted
+- Check that the app isn't disabled in startup app managers
+- Verify the BootReceiver is enabled in app settings
 
 **No devices found in scan**:
 - Ensure Bluetooth is enabled
 - Make target device discoverable
 - Check that BLUETOOTH_SCAN permission is granted
+
+### Advanced Troubleshooting
+
+**For manufacturer-specific battery optimization**:
+- **Samsung**: Settings > Apps > Special access > Optimize battery usage > All apps > Where's My Car > Don't optimize
+- **Huawei**: Settings > Apps > Advanced > Ignore battery optimizations > Where's My Car
+- **OnePlus**: Settings > Battery > Battery optimization > All apps > Where's My Car > Don't optimize
+- **Xiaomi**: Settings > Apps > Manage apps > Where's My Car > Battery saver > No restrictions
+
+**If service still gets killed**:
+- Check Android's "Developer options" > "Don't keep activities"
+- Review "Background app limits" in developer settings
+- Test with different Bluetooth devices
+- Monitor Android's Logcat for service termination messages
 
 ### Support
 
