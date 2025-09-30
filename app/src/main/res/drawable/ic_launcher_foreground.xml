@@ -8,43 +8,38 @@
     <!-- Parking sign background (blue square - full size) -->
     <path 
         android:fillColor="@color/icon_bg_middle"
-        android:pathData="M18,18h72c6,0 12,6 12,12v48c0,6 -6,12 -12,12H18c-6,0 -12,-6 -12,-12V30C6,24 12,18 18,18z" />
+        android:pathData="M18,18h72c6,0 12,6 12,12v72c0,6 -6,12 -12,12H18c-6,0 -12,-6 -12,-12V30C6,24 12,18 18,18z" />
 
     <!-- Parking sign white border -->
     <path 
         android:fillColor="@android:color/transparent"
         android:strokeColor="@color/white"
         android:strokeWidth="4"
-        android:pathData="M18,18h72c6,0 12,6 12,12v48c0,6 -6,12 -12,12H18c-6,0 -12,-6 -12,-12V30C6,24 12,18 18,18z" />
+        android:pathData="M18,18h72c6,0 12,6 12,12v72c0,6 -6,12 -12,12H18c-6,0 -12,-6 -12,-12V30C6,24 12,18 18,18z" />
 
     <!-- Letter P - vertical stroke -->
     <path 
         android:fillColor="@color/white"
-        android:pathData="M28,32h8v44h-8z" />
+        android:pathData="M35,35h10v58h-10z" />
         
     <!-- Letter P - top horizontal stroke -->
     <path 
         android:fillColor="@color/white"
-        android:pathData="M36,32h24c4,0 8,4 8,8v8c0,4 -4,8 -8,8H36z" />
-        
-    <!-- Letter P - middle horizontal stroke -->
-    <path 
-        android:fillColor="@color/white"
-        android:pathData="M36,48h16v8h-16z" />
+        android:pathData="M45,35h20c3,0 6,3 6,6v18c0,3 -3,6 -6,6H45z" />
 
     <!-- P's hollow belly (D-shaped cutout) -->
-    <path 
+    <path
         android:fillColor="@color/icon_bg_middle"
-        android:pathData="M36,38h22c2,0 4,2 4,4v4c0,2 -2,4 -4,4H36z" />
+        android:pathData="M45,41h16c2,0 4,2 4,4v10c0,2 -2,4 -4,4H45z" />
 
-    <!-- Small location pin (inside P's belly) -->
+    <!-- Location pin (inside P's belly) -->
     <path 
         android:fillColor="@color/icon_location_pin"
-        android:pathData="M58,58c-3,0 -5.5,2.5 -5.5,5.5c0,4.5 5.5,10 5.5,10s5.5,-5.5 5.5,-10C63.5,60.5 61,58 58,58z" />
+        android:pathData="M60,73c-4,0 -7,3 -7,7c0,6 7,12 7,12s7,-6 7,-12C67,76 64,73 60,73z" />
 
     <!-- Location pin center -->
     <path 
         android:fillColor="@color/white"
-        android:pathData="M58,62a1.5,1.5 0,1 1,0 3a1.5,1.5 0,1 1,0 -3z" />
+        android:pathData="M60,78a2,2 0,1 1,0 4a2,2 0,1 1,0 -4z" />
 
 </vector>
