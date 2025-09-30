@@ -5,41 +5,41 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Parking sign background (blue square - full size) -->
+    <!-- Parking sign background (blue square - proper size) -->
     <path 
         android:fillColor="@color/icon_bg_middle"
-        android:pathData="M18,18h72c6,0 12,6 12,12v72c0,6 -6,12 -12,12H18c-6,0 -12,-6 -12,-12V30C6,24 12,18 18,18z" />
+        android:pathData="M27,27h54c4,0 8,4 8,8v46c0,4 -4,8 -8,8H27c-4,0 -8,-4 -8,-8V35C19,31 23,27 27,27z" />
 
     <!-- Parking sign white border -->
     <path 
         android:fillColor="@android:color/transparent"
         android:strokeColor="@color/white"
-        android:strokeWidth="4"
-        android:pathData="M18,18h72c6,0 12,6 12,12v72c0,6 -6,12 -12,12H18c-6,0 -12,-6 -12,-12V30C6,24 12,18 18,18z" />
+        android:strokeWidth="3"
+        android:pathData="M27,27h54c4,0 8,4 8,8v46c0,4 -4,8 -8,8H27c-4,0 -8,-4 -8,-8V35C19,31 23,27 27,27z" />
 
     <!-- Letter P - vertical stroke -->
     <path 
         android:fillColor="@color/white"
-        android:pathData="M35,35h10v58h-10z" />
+        android:pathData="M35,35h10v46h-10z" />
         
     <!-- Letter P - top horizontal stroke -->
     <path 
         android:fillColor="@color/white"
-        android:pathData="M45,35h20c3,0 6,3 6,6v18c0,3 -3,6 -6,6H45z" />
+        android:pathData="M45,35h20c3,0 6,3 6,6v12c0,3 -3,6 -6,6H45z" />
 
     <!-- P's hollow belly (D-shaped cutout) -->
     <path
         android:fillColor="@color/icon_bg_middle"
-        android:pathData="M45,41h16c2,0 4,2 4,4v10c0,2 -2,4 -4,4H45z" />
+        android:pathData="M45,41h16c2,0 4,2 4,4v4c0,2 -2,4 -4,4H45z" />
 
     <!-- Location pin (inside P's belly) -->
     <path 
         android:fillColor="@color/icon_location_pin"
-        android:pathData="M60,73c-4,0 -7,3 -7,7c0,6 7,12 7,12s7,-6 7,-12C67,76 64,73 60,73z" />
+        android:pathData="M60,63c-4,0 -7,3 -7,7c0,6 7,12 7,12s7,-6 7,-12C67,66 64,63 60,63z" />
 
     <!-- Location pin center -->
     <path 
         android:fillColor="@color/white"
-        android:pathData="M60,78a2,2 0,1 1,0 4a2,2 0,1 1,0 -4z" />
+        android:pathData="M60,68a2,2 0,1 1,0 4a2,2 0,1 1,0 -4z" />
 
 </vector>
