@@ -60,6 +60,10 @@ class ParkingTrackingService : Service() {
     private var connectivityCheckJob: Job? = null
     private var isDeviceConnected = true
     private var lastDisconnectionTime: Long = 0
+    private var lastSavedLocation: Location? = null
+    
+    // Minimum distance threshold in meters
+    private const val MIN_DISTANCE_THRESHOLD = 50.0
     
     // Broadcast receiver for Bluetooth connection events
     private val bluetoothReceiver = object : BroadcastReceiver() {
@@ -212,31 +216,48 @@ class ParkingTrackingService : Service() {
     }
     
     /**
-     * Saves the current location to the repository.
+     * Saves the current location to the repository if it is significantly different from the last saved location.
      */
     private fun saveCurrentLocation() {
         serviceScope.launch {
             try {
                 val location = locationManager.getLocationWithFallback()
                 if (location != null && trackedDeviceName != null) {
-                    val parkingLocation = ParkingLocation(
-                        latitude = location.latitude,
-                        longitude = location.longitude,
-                        timestamp = Date(),
-                        deviceName = trackedDeviceName!!
-                    )
-                    
-                    repository.saveParkingLocation(parkingLocation)
-                    
-                    // Update notification to show location saved
-                    val updatedNotification = createNotification("Location saved!")
-                    val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                    notificationManager.notify(NOTIFICATION_ID, updatedNotification)
+                    // Check if the new location is significantly different
+                    if (lastSavedLocation == null || calculateDistance(lastSavedLocation!!, location) > MIN_DISTANCE_THRESHOLD) {
+                        val parkingLocation = ParkingLocation(
+                            latitude = location.latitude,
+                            longitude = location.longitude,
+                            timestamp = Date(),
+                            deviceName = trackedDeviceName!!
+                        )
+                        
+                        repository.saveParkingLocation(parkingLocation)
+                        
+                        // Update notification to show location saved
+                        val updatedNotification = createNotification("Location saved!")
+                        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        notificationManager.notify(NOTIFICATION_ID, updatedNotification)
+                        
+                        // Update last saved location
+                        lastSavedLocation = location
+                    }
                 }
             } catch (e: Exception) {
                 // Log error or show notification about failure
             }
         }
+    }
+    
+    /**
+     * Calculates the distance between two locations in meters.
+     *
+     * @param location1 The first location.
+     * @param location2 The second location.
+     * @return The distance in meters.
+     */
+    private fun calculateDistance(location1: Location, location2: Location): Float {
+        return location1.distanceTo(location2)
     }
     
     /**
