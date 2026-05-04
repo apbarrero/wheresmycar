@@ -9,6 +9,10 @@ import com.apbarrero.wheresmycar.ui.MainScreen
 import com.apbarrero.wheresmycar.ui.MainViewModel
 import com.apbarrero.wheresmycar.ui.theme.WheresMyCarTheme
 
+/**
+ * The main activity of the application.
+ * This activity is responsible for setting up the UI and initializing the MainViewModel.
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

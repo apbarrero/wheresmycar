@@ -15,22 +15,40 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+/**
+ * Manages Bluetooth operations such as device discovery and connection state monitoring.
+ */
 class BluetoothManager(private val context: Context) {
     
     private val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as SystemBluetoothManager
     private val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.adapter
     
+    /**
+     * A flow that emits a list of discovered Bluetooth devices.
+     */
     private val _discoveredDevices = MutableStateFlow<List<BluetoothDeviceInfo>>(emptyList())
     val discoveredDevices: StateFlow<List<BluetoothDeviceInfo>> = _discoveredDevices.asStateFlow()
     
+    /**
+     * A flow that indicates whether the device is currently scanning for other devices.
+     */
     private val _isScanning = MutableStateFlow(false)
     val isScanning: StateFlow<Boolean> = _isScanning.asStateFlow()
     
+    /**
+     * A flow that emits the current connection state of the tracked Bluetooth device.
+     */
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Unknown)
     val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
     
+    /**
+     * The address of the currently tracked Bluetooth device.
+     */
     private var trackedDeviceAddress: String? = null
     
+    /**
+     * Enum representing the connection state of a Bluetooth device.
+     */
     enum class ConnectionState {
         Connected,
         Disconnected,
@@ -102,14 +120,18 @@ class BluetoothManager(private val context: Context) {
     }
     
     /**
-     * Check if Bluetooth is available and enabled
+     * Checks if Bluetooth is available and enabled.
+     *
+     * @return true if Bluetooth is enabled, false otherwise.
      */
     fun isBluetoothEnabled(): Boolean {
         return bluetoothAdapter?.isEnabled == true
     }
     
     /**
-     * Check if we have the necessary Bluetooth permissions
+     * Checks if the necessary Bluetooth permissions are granted.
+     *
+     * @return true if all required permissions are granted, false otherwise.
      */
     private fun hasBluetoothPermissions(): Boolean {
         return ActivityCompat.checkSelfPermission(
@@ -121,7 +143,9 @@ class BluetoothManager(private val context: Context) {
     }
     
     /**
-     * Start discovering Bluetooth devices
+     * Starts discovering Bluetooth devices.
+     *
+     * @return true if discovery started successfully, false otherwise.
      */
     fun startDiscovery(): Boolean {
         if (!isBluetoothEnabled() || !hasBluetoothPermissions()) {
@@ -155,7 +179,7 @@ class BluetoothManager(private val context: Context) {
     }
     
     /**
-     * Stop device discovery
+     * Stops device discovery.
      */
     fun stopDiscovery() {
         if (hasBluetoothPermissions()) {
@@ -165,7 +189,9 @@ class BluetoothManager(private val context: Context) {
     }
     
     /**
-     * Set the device to track for connections
+     * Sets the device to track for connections.
+     *
+     * @param deviceAddress The address of the Bluetooth device to track.
      */
     fun setTrackedDevice(deviceAddress: String) {
         trackedDeviceAddress = deviceAddress
@@ -181,7 +207,7 @@ class BluetoothManager(private val context: Context) {
     }
     
     /**
-     * Clean up resources
+     * Cleans up resources by stopping discovery and unregistering broadcast receivers.
      */
     fun cleanup() {
         try {

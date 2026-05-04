@@ -15,11 +15,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the main UI screen.
+ */
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     
     private val repository = Repository(application)
     private val bluetoothManager = BluetoothManager(application)
     
+    /**
+     * A flow that emits the current UI state.
+     */
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     
@@ -53,6 +59,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
     
+    /**
+     * Data class representing the UI state.
+     */
     data class UiState(
         val appSettings: AppSettings = AppSettings(),
         val discoveredDevices: List<BluetoothDeviceInfo> = emptyList(),
@@ -62,6 +71,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val errorMessage: String? = null
     )
     
+    /**
+     * Starts the discovery of Bluetooth devices.
+     */
     fun startDeviceDiscovery() {
         if (!bluetoothManager.isBluetoothEnabled()) {
             _uiState.value = _uiState.value.copy(
@@ -78,10 +90,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
     
+    /**
+     * Stops the discovery of Bluetooth devices.
+     */
     fun stopDeviceDiscovery() {
         bluetoothManager.stopDiscovery()
     }
     
+    /**
+     * Selects a Bluetooth device for tracking.
+     *
+     * @param device The selected Bluetooth device information.
+     */
     fun selectDevice(device: BluetoothDeviceInfo) {
         viewModelScope.launch {
             try {
@@ -107,6 +127,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
     
+    /**
+     * Toggles the tracking state.
+     */
     fun toggleTracking() {
         val currentSettings = _uiState.value.appSettings
         
@@ -131,18 +154,32 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
     
+    /**
+     * Shows the device selection dialog.
+     */
     fun showDeviceSelection() {
         _uiState.value = _uiState.value.copy(showDeviceSelection = true)
     }
     
+    /**
+     * Hides the device selection dialog.
+     */
     fun hideDeviceSelection() {
         _uiState.value = _uiState.value.copy(showDeviceSelection = false)
     }
     
+    /**
+     * Clears any error messages.
+     */
     fun clearError() {
         _uiState.value = _uiState.value.copy(errorMessage = null)
     }
     
+    /**
+     * Starts the parking tracking service.
+     *
+     * @param device The Bluetooth device to track.
+     */
     private fun startTrackingService(device: BluetoothDeviceInfo) {
         val context = getApplication<Application>()
         val intent = Intent(context, ParkingTrackingService::class.java).apply {
@@ -153,6 +190,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         context.startForegroundService(intent)
     }
     
+    /**
+     * Stops the parking tracking service.
+     */
     private fun stopTrackingService() {
         val context = getApplication<Application>()
         val intent = Intent(context, ParkingTrackingService::class.java).apply {

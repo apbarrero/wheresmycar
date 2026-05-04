@@ -13,13 +13,18 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+/**
+ * Manages location-related operations using the Fused Location Provider.
+ */
 class LocationManager(private val context: Context) {
     
     private val fusedLocationClient: FusedLocationProviderClient = 
         LocationServices.getFusedLocationProviderClient(context)
     
     /**
-     * Check if location permissions are granted
+     * Checks if location permissions are granted.
+     *
+     * @return true if either fine or coarse location permission is granted, false otherwise.
      */
     fun hasLocationPermissions(): Boolean {
         return ActivityCompat.checkSelfPermission(
@@ -31,7 +36,9 @@ class LocationManager(private val context: Context) {
     }
     
     /**
-     * Get current location
+     * Retrieves the current location using the Fused Location Provider.
+     *
+     * @return The current location if available, null otherwise.
      */
     suspend fun getCurrentLocation(): Location? {
         if (!hasLocationPermissions()) {
@@ -61,7 +68,9 @@ class LocationManager(private val context: Context) {
     }
     
     /**
-     * Get last known location
+     * Retrieves the last known location using the Fused Location Provider.
+     *
+     * @return The last known location if available, null otherwise.
      */
     suspend fun getLastKnownLocation(): Location? {
         if (!hasLocationPermissions()) {
@@ -84,7 +93,9 @@ class LocationManager(private val context: Context) {
     }
     
     /**
-     * Get location with fallback to last known location
+     * Retrieves the current location with a fallback to the last known location.
+     *
+     * @return The current or last known location if available, null otherwise.
      */
     suspend fun getLocationWithFallback(): Location? {
         return try {

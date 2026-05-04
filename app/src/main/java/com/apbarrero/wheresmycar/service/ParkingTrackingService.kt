@@ -22,6 +22,9 @@ import kotlinx.coroutines.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
+/**
+ * Service responsible for tracking the parking location of a Bluetooth device.
+ */
 class ParkingTrackingService : Service() {
     
     companion object {
@@ -36,6 +39,11 @@ class ParkingTrackingService : Service() {
         
         private val runningServices = ConcurrentHashMap<String, Boolean>()
         
+        /**
+         * Checks if the parking tracking service is currently running.
+         *
+         * @return true if any instance of the service is running, false otherwise.
+         */
         fun isServiceRunning(): Boolean {
             return runningServices.isNotEmpty()
         }
@@ -195,11 +203,17 @@ class ParkingTrackingService : Service() {
         }
     }
     
+    /**
+     * Starts the service in the foreground with a notification.
+     */
     private fun startForegroundService() {
         val notification = createNotification()
         startForeground(NOTIFICATION_ID, notification)
     }
     
+    /**
+     * Saves the current location to the repository.
+     */
     private fun saveCurrentLocation() {
         serviceScope.launch {
             try {
@@ -225,6 +239,9 @@ class ParkingTrackingService : Service() {
         }
     }
     
+    /**
+     * Creates a notification channel for the service.
+     */
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -243,6 +260,12 @@ class ParkingTrackingService : Service() {
         }
     }
     
+    /**
+     * Creates a notification for the service.
+     *
+     * @param contentText The text to display in the notification.
+     * @return A notification object.
+     */
     private fun createNotification(contentText: String = "Tracking parking location"): Notification {
         // Create intent to open main activity when notification is tapped
         val intent = packageManager.getLaunchIntentForPackage(packageName)
@@ -265,6 +288,13 @@ class ParkingTrackingService : Service() {
             .build()
     }
     
+    /**
+     * Saves the tracking state to shared preferences.
+     *
+     * @param isTracking True if tracking is enabled, false otherwise.
+     * @param deviceAddress The address of the tracked device.
+     * @param deviceName The name of the tracked device.
+     */
     private fun saveTrackingState(isTracking: Boolean, deviceAddress: String, deviceName: String) {
         val preferences = getSharedPreferences("parking_prefs", Context.MODE_PRIVATE)
         preferences.edit()
@@ -274,6 +304,9 @@ class ParkingTrackingService : Service() {
             .apply()
     }
     
+    /**
+     * Starts monitoring the Bluetooth connectivity of the tracked device.
+     */
     private fun startConnectivityMonitoring() {
         connectivityCheckJob?.cancel()
         connectivityCheckJob = serviceScope.launch {
@@ -284,6 +317,9 @@ class ParkingTrackingService : Service() {
         }
     }
     
+    /**
+     * Checks the Bluetooth connectivity of the tracked device.
+     */
     private fun checkBluetoothConnectivity() {
         if (trackedDeviceAddress == null) return
         
@@ -318,6 +354,9 @@ class ParkingTrackingService : Service() {
         }
     }
     
+    /**
+     * Requests an exemption from battery optimization for the app.
+     */
     private fun requestBatteryOptimizationExemption() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -334,6 +373,9 @@ class ParkingTrackingService : Service() {
         }
     }
     
+    /**
+     * Schedules the service to restart using AlarmManager.
+     */
     private fun scheduleServiceRestart() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager

@@ -16,6 +16,9 @@ import java.util.Date
 // Create DataStore instance
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_settings")
 
+/**
+ * Repository class for managing app settings and data persistence.
+ */
 class Repository(private val context: Context) {
     
     private object PreferencesKeys {
@@ -30,7 +33,7 @@ class Repository(private val context: Context) {
     }
     
     /**
-     * Get app settings as a flow
+     * A flow that emits the current app settings.
      */
     val appSettings: Flow<AppSettings> = context.dataStore.data.map { preferences ->
         val lastLocation = if (preferences[PreferencesKeys.LAST_LATITUDE] != null &&
@@ -56,7 +59,9 @@ class Repository(private val context: Context) {
     }
     
     /**
-     * Save selected Bluetooth device
+     * Saves the selected Bluetooth device information.
+     *
+     * @param deviceInfo The Bluetooth device information to save.
      */
     suspend fun saveSelectedDevice(deviceInfo: BluetoothDeviceInfo) {
         context.dataStore.edit { preferences ->
@@ -66,7 +71,9 @@ class Repository(private val context: Context) {
     }
     
     /**
-     * Enable or disable tracking
+     * Enables or disables tracking.
+     *
+     * @param enabled True to enable tracking, false to disable it.
      */
     suspend fun setTrackingEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->
@@ -75,7 +82,9 @@ class Repository(private val context: Context) {
     }
     
     /**
-     * Save parking location
+     * Saves the parking location information.
+     *
+     * @param location The parking location to save.
      */
     suspend fun saveParkingLocation(location: ParkingLocation) {
         context.dataStore.edit { preferences ->
@@ -90,7 +99,7 @@ class Repository(private val context: Context) {
     }
     
     /**
-     * Clear all data
+     * Clears all stored data.
      */
     suspend fun clearAllData() {
         context.dataStore.edit { preferences ->
