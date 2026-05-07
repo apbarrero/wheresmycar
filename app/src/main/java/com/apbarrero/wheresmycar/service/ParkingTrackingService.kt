@@ -20,6 +20,7 @@ import com.apbarrero.wheresmycar.data.ParkingLocation
 import com.apbarrero.wheresmycar.data.Repository
 import com.apbarrero.wheresmycar.location.LocationManager
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.first
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -60,9 +61,15 @@ class ParkingTrackingService : Service() {
     private var serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
     private var connectivityCheckJob: Job? = null
-    private var isDeviceConnected = true
+    // Default to "disconnected" — the broadcast receiver and the first
+    // polling check will set this to the real value. Defaulting to `true`
+    // caused phantom saves on every service restart while the car was off.
+    private var isDeviceConnected = false
+    // Tracks whether we've observed the actual connection state at least
+    // once during this service instance. The first polling check after a
+    // service restart establishes the baseline without firing a save.
+    private var hasInitialConnectionState = false
     private var lastDisconnectionTime: Long = 0
-    private var lastSavedLocation: Location? = null
 
     // Broadcast receiver for Bluetooth connection events
     private val bluetoothReceiver = object : BroadcastReceiver() {
@@ -139,9 +146,20 @@ class ParkingTrackingService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START_TRACKING -> {
-                trackedDeviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS)
-                trackedDeviceName = intent.getStringExtra(EXTRA_DEVICE_NAME)
-                
+                val newAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS)
+                val newName = intent.getStringExtra(EXTRA_DEVICE_NAME)
+
+                // If the tracked device changed, reset connectivity state so
+                // we don't compare the new device's state against the old
+                // device's last-known status.
+                if (newAddress != null && newAddress != trackedDeviceAddress) {
+                    isDeviceConnected = false
+                    hasInitialConnectionState = false
+                }
+
+                trackedDeviceAddress = newAddress
+                trackedDeviceName = newName
+
                 if (trackedDeviceAddress != null && trackedDeviceName != null) {
                     // Save tracking state to preferences
                     saveTrackingState(true, trackedDeviceAddress!!, trackedDeviceName!!)
@@ -215,50 +233,47 @@ class ParkingTrackingService : Service() {
     }
     
     /**
-     * Saves the current location to the repository if it is significantly different from the last saved location.
+     * Saves the current location if it differs from the previously stored
+     * parking location by more than [MIN_DISTANCE_THRESHOLD]. Compares
+     * against the persisted location (not an in-memory cache) so the
+     * distance guard survives service restarts — otherwise every restart
+     * silently bypassed it.
      */
     private fun saveCurrentLocation() {
         serviceScope.launch {
             try {
-                val location = locationManager.getLocationWithFallback()
-                if (location != null && trackedDeviceName != null) {
-                    // Check if the new location is significantly different
-                    if (lastSavedLocation == null || calculateDistance(lastSavedLocation!!, location) > MIN_DISTANCE_THRESHOLD) {
-                        val parkingLocation = ParkingLocation(
-                            latitude = location.latitude,
-                            longitude = location.longitude,
-                            timestamp = Date(),
-                            deviceName = trackedDeviceName!!
-                        )
-                        
-                        repository.saveParkingLocation(parkingLocation)
-                        
-                        // Update notification to show location saved
-                        val updatedNotification = createNotification("Location saved!")
-                        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                        notificationManager.notify(NOTIFICATION_ID, updatedNotification)
-                        
-                        // Update last saved location
-                        lastSavedLocation = location
-                    }
+                val location = locationManager.getLocationWithFallback() ?: return@launch
+                val deviceName = trackedDeviceName ?: return@launch
+
+                val previousLocation = repository.appSettings.first().lastKnownLocation
+                if (previousLocation != null) {
+                    val results = FloatArray(1)
+                    Location.distanceBetween(
+                        previousLocation.latitude, previousLocation.longitude,
+                        location.latitude, location.longitude,
+                        results
+                    )
+                    if (results[0] <= MIN_DISTANCE_THRESHOLD) return@launch
                 }
+
+                val parkingLocation = ParkingLocation(
+                    latitude = location.latitude,
+                    longitude = location.longitude,
+                    timestamp = Date(),
+                    deviceName = deviceName
+                )
+                repository.saveParkingLocation(parkingLocation)
+
+                val updatedNotification = createNotification("Location saved!")
+                val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.notify(NOTIFICATION_ID, updatedNotification)
             } catch (e: Exception) {
                 // Log error or show notification about failure
             }
         }
     }
-    
-    /**
-     * Calculates the distance between two locations in meters.
-     *
-     * @param location1 The first location.
-     * @param location2 The second location.
-     * @return The distance in meters.
-     */
-    private fun calculateDistance(location1: Location, location2: Location): Float {
-        return location1.distanceTo(location2)
-    }
-    
+
+
     /**
      * Creates a notification channel for the service.
      */
@@ -338,34 +353,39 @@ class ParkingTrackingService : Service() {
     }
     
     /**
-     * Checks the Bluetooth connectivity of the tracked device.
+     * Checks the Bluetooth connectivity of the tracked device. The first
+     * successful check after a service restart establishes the baseline
+     * without firing a save — only observed transitions during this
+     * service instance trigger [saveCurrentLocation].
      */
     private fun checkBluetoothConnectivity() {
         if (trackedDeviceAddress == null) return
-        
+
         try {
             val bondedDevices = bluetoothAdapter.bondedDevices
-            val trackedDevice = bondedDevices.find { it.address == trackedDeviceAddress }
-            
-            if (trackedDevice != null) {
-                // Use reflection to check if device is connected (Android doesn't provide direct API)
-                try {
-                    val method = trackedDevice.javaClass.getMethod("isConnected")
-                    val isConnected = method.invoke(trackedDevice) as Boolean
-                    
-                    if (isDeviceConnected && !isConnected) {
-                        // Device just disconnected
-                        isDeviceConnected = false
-                        lastDisconnectionTime = System.currentTimeMillis()
-                        saveCurrentLocation()
-                    } else if (!isDeviceConnected && isConnected) {
-                        // Device reconnected
-                        isDeviceConnected = true
-                    }
-                } catch (e: Exception) {
-                    // Fallback: if reflection fails, assume device is still connected
-                    // This is not ideal but better than crashing
-                }
+            val trackedDevice = bondedDevices.find { it.address == trackedDeviceAddress } ?: return
+
+            val isConnected = try {
+                val method = trackedDevice.javaClass.getMethod("isConnected")
+                method.invoke(trackedDevice) as Boolean
+            } catch (e: Exception) {
+                // Reflection failed — can't determine state. Skip rather
+                // than guess: a wrong guess fires a phantom save.
+                return
+            }
+
+            if (!hasInitialConnectionState) {
+                isDeviceConnected = isConnected
+                hasInitialConnectionState = true
+                return
+            }
+
+            if (isDeviceConnected && !isConnected) {
+                isDeviceConnected = false
+                lastDisconnectionTime = System.currentTimeMillis()
+                saveCurrentLocation()
+            } else if (!isDeviceConnected && isConnected) {
+                isDeviceConnected = true
             }
         } catch (e: SecurityException) {
             // Bluetooth permission might be revoked
