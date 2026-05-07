@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.IBinder
@@ -36,6 +37,7 @@ class ParkingTrackingService : Service() {
         private const val NOTIFICATION_ID = 1
         private const val CHANNEL_ID = "parking_tracking_channel"
         private const val CONNECTIVITY_CHECK_INTERVAL = 30000L // 30 seconds
+        private const val MIN_DISTANCE_THRESHOLD = 50.0 // meters
         
         private val runningServices = ConcurrentHashMap<String, Boolean>()
         
@@ -61,10 +63,7 @@ class ParkingTrackingService : Service() {
     private var isDeviceConnected = true
     private var lastDisconnectionTime: Long = 0
     private var lastSavedLocation: Location? = null
-    
-    // Minimum distance threshold in meters
-    private const val MIN_DISTANCE_THRESHOLD = 50.0
-    
+
     // Broadcast receiver for Bluetooth connection events
     private val bluetoothReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
