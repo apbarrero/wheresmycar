@@ -92,3 +92,6 @@ lint/tmp/
 # NDK
 obj/
 .aider*
+
+# Claude Code local settings
+.claude/
