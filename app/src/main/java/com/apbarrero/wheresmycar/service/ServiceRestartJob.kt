@@ -9,66 +9,65 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.apbarrero.wheresmycar.data.Repository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class ServiceRestartJob : JobService() {
-    
+
     companion object {
         private const val JOB_ID = 1001
-        
+
         fun scheduleJob(context: Context) {
             val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-            
-            // Cancel any existing job
             jobScheduler.cancel(JOB_ID)
-            
             val jobInfo = JobInfo.Builder(JOB_ID, ComponentName(context, ServiceRestartJob::class.java))
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE)
                 .setPersisted(true)
-                .setPeriodic(15 * 60 * 1000) // Check every 15 minutes
+                .setPeriodic(15 * 60 * 1000)
                 .setRequiresCharging(false)
                 .setRequiresDeviceIdle(false)
                 .build()
-                
             jobScheduler.schedule(jobInfo)
         }
-        
+
         fun cancelJob(context: Context) {
             val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
             jobScheduler.cancel(JOB_ID)
         }
     }
-    
+
     override fun onStartJob(params: JobParameters?): Boolean {
-        // Check if our service is running, if not restart it
-        val preferences = getSharedPreferences("parking_prefs", Context.MODE_PRIVATE)
-        val wasTracking = preferences.getBoolean("was_tracking", false)
-        val deviceAddress = preferences.getString("tracked_device_address", null)
-        val deviceName = preferences.getString("tracked_device_name", null)
-        
-        if (wasTracking && deviceAddress != null && deviceName != null) {
-            // Check if service is running
-            if (!ParkingTrackingService.isServiceRunning()) {
-                // Service is not running, restart it
-                val serviceIntent = Intent(this, ParkingTrackingService::class.java).apply {
-                    action = ParkingTrackingService.ACTION_START_TRACKING
-                    putExtra(ParkingTrackingService.EXTRA_DEVICE_ADDRESS, deviceAddress)
-                    putExtra(ParkingTrackingService.EXTRA_DEVICE_NAME, deviceName)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val settings = Repository(this@ServiceRestartJob).appSettings.first()
+                val address = settings.selectedDeviceAddress
+                val name = settings.selectedDeviceName
+                if (settings.isTrackingEnabled &&
+                    address != null &&
+                    name != null &&
+                    !ParkingTrackingService.isServiceRunning()
+                ) {
+                    val serviceIntent = Intent(this@ServiceRestartJob, ParkingTrackingService::class.java).apply {
+                        action = ParkingTrackingService.ACTION_START_TRACKING
+                        putExtra(ParkingTrackingService.EXTRA_DEVICE_ADDRESS, address)
+                        putExtra(ParkingTrackingService.EXTRA_DEVICE_NAME, name)
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startForegroundService(serviceIntent)
+                    } else {
+                        startService(serviceIntent)
+                    }
                 }
-                
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    startForegroundService(serviceIntent)
-                } else {
-                    startService(serviceIntent)
-                }
+            } finally {
+                jobFinished(params, false)
             }
         }
-        
-        jobFinished(params, false)
-        return false
+        return true // work is async
     }
-    
-    override fun onStopJob(params: JobParameters?): Boolean {
-        return false
-    }
+
+    override fun onStopJob(params: JobParameters?) = false
 }

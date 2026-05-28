@@ -159,9 +159,6 @@ class ParkingTrackingService : Service() {
                 trackedDeviceName = newName
 
                 if (trackedDeviceAddress != null && trackedDeviceName != null) {
-                    // Save tracking state to preferences
-                    saveTrackingState(true, trackedDeviceAddress!!, trackedDeviceName!!)
-                    
                     // Add this service to running services map
                     runningServices[trackedDeviceAddress!!] = true
                     
@@ -175,7 +172,6 @@ class ParkingTrackingService : Service() {
                 }
             }
             ACTION_STOP_TRACKING -> {
-                saveTrackingState(false, "", "")
                 runningServices.remove(trackedDeviceAddress)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     ServiceRestartJob.cancelJob(this)
@@ -212,12 +208,10 @@ class ParkingTrackingService : Service() {
         runningServices.remove(trackedDeviceAddress)
         
         serviceJob.cancel()
-        
-        // If we're being destroyed and still tracking, try to restart
-        val preferences = getSharedPreferences("parking_prefs", Context.MODE_PRIVATE)
-        val wasTracking = preferences.getBoolean("was_tracking", false)
-        if (wasTracking && trackedDeviceAddress != null && trackedDeviceName != null) {
-            // Schedule restart using AlarmManager as fallback
+
+        // If we're being destroyed mid-tracking, schedule an AlarmManager restart as fallback.
+        // trackedDeviceAddress being non-null means we were actively tracking.
+        if (trackedDeviceAddress != null && trackedDeviceName != null) {
             scheduleServiceRestart()
         }
     }
@@ -319,22 +313,6 @@ class ParkingTrackingService : Service() {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .build()
-    }
-    
-    /**
-     * Saves the tracking state to shared preferences.
-     *
-     * @param isTracking True if tracking is enabled, false otherwise.
-     * @param deviceAddress The address of the tracked device.
-     * @param deviceName The name of the tracked device.
-     */
-    private fun saveTrackingState(isTracking: Boolean, deviceAddress: String, deviceName: String) {
-        val preferences = getSharedPreferences("parking_prefs", Context.MODE_PRIVATE)
-        preferences.edit()
-            .putBoolean("was_tracking", isTracking)
-            .putString("tracked_device_address", deviceAddress)
-            .putString("tracked_device_name", deviceName)
-            .apply()
     }
     
     /**
