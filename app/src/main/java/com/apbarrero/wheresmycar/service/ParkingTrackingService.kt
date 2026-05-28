@@ -111,7 +111,7 @@ class ParkingTrackingService : Service() {
     override fun onCreate() {
         super.onCreate()
         repository = Repository.create(this)
-        locationManager = LocationManager(this)
+        locationManager = LocationManager.create(this)
         
         // Initialize Bluetooth adapter and connection checker
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
