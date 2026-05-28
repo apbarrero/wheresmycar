@@ -3,6 +3,8 @@ package com.apbarrero.wheresmycar.ui
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.os.PowerManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.apbarrero.wheresmycar.bluetooth.BluetoothManager
@@ -31,6 +33,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     
     init {
+        checkBatteryOptimization()
+
         // Observe app settings
         viewModelScope.launch {
             repository.appSettings.collect { settings ->
@@ -69,7 +73,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val isScanning: Boolean = false,
         val connectionState: BluetoothManager.ConnectionState = BluetoothManager.ConnectionState.Unknown,
         val showDeviceSelection: Boolean = false,
-        val errorMessage: String? = null
+        val errorMessage: String? = null,
+        val needsBatteryOptimizationExemption: Boolean = false
     )
     
     /**
@@ -151,6 +156,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         name = currentSettings.selectedDeviceName ?: "Unknown Device"
                     )
                     startTrackingService(device)
+                    checkBatteryOptimization()
                 }
             }
         }
@@ -175,6 +181,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun clearError() {
         _uiState.value = _uiState.value.copy(errorMessage = null)
+    }
+
+    /**
+     * Checks whether the app needs a battery optimization exemption and updates UiState.
+     * Called on init and when tracking is enabled so the banner appears at the right time.
+     */
+    fun checkBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val pm = getApplication<Application>().getSystemService(Context.POWER_SERVICE) as PowerManager
+            val needed = !pm.isIgnoringBatteryOptimizations(getApplication<Application>().packageName)
+            _uiState.value = _uiState.value.copy(needsBatteryOptimizationExemption = needed)
+        }
     }
     
     /**

@@ -13,11 +13,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.Location
-import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
-import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import com.apbarrero.wheresmycar.R
 import com.apbarrero.wheresmycar.data.ParkingLocation
@@ -137,9 +135,6 @@ class ParkingTrackingService : Service() {
             addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
         }
         registerReceiver(bluetoothReceiver, filter)
-        
-        // Request battery optimization exemption
-        requestBatteryOptimizationExemption()
     }
     
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -340,25 +335,6 @@ class ParkingTrackingService : Service() {
             connectionMonitor.checkState(isConnected)
         } catch (e: SecurityException) {
             // BLUETOOTH_CONNECT permission was revoked at runtime — skip this poll.
-        }
-    }
-    
-    /**
-     * Requests an exemption from battery optimization for the app.
-     */
-    private fun requestBatteryOptimizationExemption() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-            if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
-                try {
-                    val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-                    intent.data = Uri.parse("package:$packageName")
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                } catch (e: Exception) {
-                    Timber.w(e, "Could not open battery optimization settings")
-                }
-            }
         }
     }
     

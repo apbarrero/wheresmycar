@@ -3,6 +3,7 @@ package com.apbarrero.wheresmycar.ui
 import android.Manifest
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -101,7 +102,8 @@ fun MainScreen(
                 MainContent(
                     uiState = uiState,
                     onToggleTracking = { viewModel.toggleTracking() },
-                    onChangeDevice = { viewModel.showDeviceSelection() }
+                    onChangeDevice = { viewModel.showDeviceSelection() },
+                    onBatteryOptimizationChecked = { viewModel.checkBatteryOptimization() }
                 )
             }
         }
@@ -155,8 +157,24 @@ private fun PermissionContent(
 private fun MainContent(
     uiState: MainViewModel.UiState,
     onToggleTracking: () -> Unit,
-    onChangeDevice: () -> Unit
+    onChangeDevice: () -> Unit,
+    onBatteryOptimizationChecked: () -> Unit,
 ) {
+    val context = LocalContext.current
+
+    if (uiState.needsBatteryOptimizationExemption) {
+        BatteryOptimizationBanner(
+            onRequestExemption = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                        data = Uri.parse("package:${context.packageName}")
+                    }
+                    context.startActivity(intent)
+                    onBatteryOptimizationChecked()
+                }
+            }
+        )
+    }
     // Current device status
     Card(
         modifier = Modifier.fillMaxWidth()
@@ -303,6 +321,41 @@ private fun LastParkingLocationCard(location: ParkingLocation) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Open in Maps")
+            }
+        }
+    }
+}
+
+@Composable
+private fun BatteryOptimizationBanner(onRequestExemption: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Battery optimization active",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onErrorContainer
+            )
+            Text(
+                text = "Android may stop this app in the background, causing missed parking saves. Tap below to disable battery optimization for reliable tracking.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onErrorContainer
+            )
+            Button(
+                onClick = onRequestExemption,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text("Disable battery optimization")
             }
         }
     }
