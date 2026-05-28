@@ -1,7 +1,15 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.play.publisher)
+}
+
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) load(keystorePropertiesFile.inputStream())
 }
 
 android {
@@ -12,8 +20,8 @@ android {
         applicationId = "com.apbarrero.wheresmycar"
         minSdk = 26
         targetSdk = 34  // Use stable API level
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = (findProperty("versionCode") as String?)?.toInt() ?: 1
+        versionName = (findProperty("versionName") as String?) ?: "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -22,16 +30,24 @@ android {
         localeFilters += listOf("en", "es")
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = true  // Enable code shrinking
-            isShrinkResources = true  // Remove unused resources
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Optional: Enable R8 full mode for better optimization
-            // isDebuggable = false (default for release)
         }
         debug {
             applicationIdSuffix = ".debug"
@@ -49,6 +65,12 @@ android {
         compose = true
         buildConfig = true
     }
+}
+
+play {
+    serviceAccountCredentials.set(file("../play-service-account.json"))
+    track.set("internal")
+    defaultToAppBundles.set(true)
 }
 
 dependencies {
