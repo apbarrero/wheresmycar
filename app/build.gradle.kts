@@ -16,9 +16,10 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 
-        // Add resource configurations for smaller APK
-        resourceConfigurations += listOf("en", "es")  // Add languages you support
+    androidResources {
+        localeFilters += listOf("en", "es")
     }
 
     buildTypes {
