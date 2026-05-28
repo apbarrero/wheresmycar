@@ -4,6 +4,8 @@ import android.app.*
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import com.apbarrero.wheresmycar.bluetooth.BluetoothConnectionMonitor
+import com.apbarrero.wheresmycar.bluetooth.SystemBluetoothConnectionChecker
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -56,20 +58,18 @@ class ParkingTrackingService : Service() {
     private lateinit var locationManager: LocationManager
     private lateinit var wakeLock: PowerManager.WakeLock
     private lateinit var bluetoothAdapter: BluetoothAdapter
+    private lateinit var connectionChecker: SystemBluetoothConnectionChecker
     private var trackedDeviceAddress: String? = null
     private var trackedDeviceName: String? = null
     private var serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
     private var connectivityCheckJob: Job? = null
-    // Default to "disconnected" — the broadcast receiver and the first
-    // polling check will set this to the real value. Defaulting to `true`
-    // caused phantom saves on every service restart while the car was off.
-    private var isDeviceConnected = false
-    // Tracks whether we've observed the actual connection state at least
-    // once during this service instance. The first polling check after a
-    // service restart establishes the baseline without firing a save.
-    private var hasInitialConnectionState = false
     private var lastDisconnectionTime: Long = 0
+
+    private val connectionMonitor = BluetoothConnectionMonitor(onDisconnected = {
+        lastDisconnectionTime = System.currentTimeMillis()
+        saveCurrentLocation()
+    })
 
     // Broadcast receiver for Bluetooth connection events
     private val bluetoothReceiver = object : BroadcastReceiver() {
@@ -78,12 +78,8 @@ class ParkingTrackingService : Service() {
                 BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
                     val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     if (device?.address == trackedDeviceAddress) {
-                        isDeviceConnected = false
-                        lastDisconnectionTime = System.currentTimeMillis()
-                        // Device disconnected - save current location
-                        saveCurrentLocation()
-                        
-                        // Update notification
+                        connectionMonitor.notifyDisconnected()
+
                         val updatedNotification = createNotification("Device disconnected - Location saved!")
                         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                         notificationManager.notify(NOTIFICATION_ID, updatedNotification)
@@ -92,8 +88,8 @@ class ParkingTrackingService : Service() {
                 BluetoothDevice.ACTION_ACL_CONNECTED -> {
                     val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     if (device?.address == trackedDeviceAddress) {
-                        isDeviceConnected = true
-                        // Update notification to show connected status
+                        connectionMonitor.notifyConnected()
+
                         val updatedNotification = createNotification("Device connected - Tracking active")
                         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                         notificationManager.notify(NOTIFICATION_ID, updatedNotification)
@@ -117,9 +113,10 @@ class ParkingTrackingService : Service() {
         repository = Repository(this)
         locationManager = LocationManager(this)
         
-        // Initialize Bluetooth adapter
+        // Initialize Bluetooth adapter and connection checker
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
+        connectionChecker = SystemBluetoothConnectionChecker(bluetoothManager)
         
         // Acquire wake lock to keep CPU awake
         val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -153,8 +150,7 @@ class ParkingTrackingService : Service() {
                 // we don't compare the new device's state against the old
                 // device's last-known status.
                 if (newAddress != null && newAddress != trackedDeviceAddress) {
-                    isDeviceConnected = false
-                    hasInitialConnectionState = false
+                    connectionMonitor.reset()
                 }
 
                 trackedDeviceAddress = newAddress
@@ -353,44 +349,17 @@ class ParkingTrackingService : Service() {
     }
     
     /**
-     * Checks the Bluetooth connectivity of the tracked device. The first
-     * successful check after a service restart establishes the baseline
-     * without firing a save — only observed transitions during this
-     * service instance trigger [saveCurrentLocation].
+     * Polls the current Bluetooth connection state using public Android APIs and
+     * forwards it to [connectionMonitor]. The monitor handles baseline establishment
+     * and transition detection — see [BluetoothConnectionMonitor] for semantics.
      */
     private fun checkBluetoothConnectivity() {
         if (trackedDeviceAddress == null) return
-
         try {
-            val bondedDevices = bluetoothAdapter.bondedDevices
-            val trackedDevice = bondedDevices.find { it.address == trackedDeviceAddress } ?: return
-
-            val isConnected = try {
-                val method = trackedDevice.javaClass.getMethod("isConnected")
-                method.invoke(trackedDevice) as Boolean
-            } catch (e: Exception) {
-                // Reflection failed — can't determine state. Skip rather
-                // than guess: a wrong guess fires a phantom save.
-                return
-            }
-
-            if (!hasInitialConnectionState) {
-                isDeviceConnected = isConnected
-                hasInitialConnectionState = true
-                return
-            }
-
-            if (isDeviceConnected && !isConnected) {
-                isDeviceConnected = false
-                lastDisconnectionTime = System.currentTimeMillis()
-                saveCurrentLocation()
-            } else if (!isDeviceConnected && isConnected) {
-                isDeviceConnected = true
-            }
+            val isConnected = connectionChecker.isDeviceConnected(trackedDeviceAddress!!)
+            connectionMonitor.checkState(isConnected)
         } catch (e: SecurityException) {
-            // Bluetooth permission might be revoked
-        } catch (e: Exception) {
-            // Handle other exceptions
+            // BLUETOOTH_CONNECT permission was revoked at runtime — skip this poll.
         }
     }
     
