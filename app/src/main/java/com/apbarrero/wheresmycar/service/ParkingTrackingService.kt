@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import com.apbarrero.wheresmycar.bluetooth.BluetoothConnectionMonitor
 import com.apbarrero.wheresmycar.bluetooth.SystemBluetoothConnectionChecker
+import androidx.core.content.IntentCompat
 import timber.log.Timber
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -77,7 +78,7 @@ class ParkingTrackingService : Service() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
-                    val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                    val device: BluetoothDevice? = IntentCompat.getParcelableExtra(intent, BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
                     if (device?.address == trackedDeviceAddress) {
                         connectionMonitor.notifyDisconnected()
 
@@ -87,7 +88,7 @@ class ParkingTrackingService : Service() {
                     }
                 }
                 BluetoothDevice.ACTION_ACL_CONNECTED -> {
-                    val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                    val device: BluetoothDevice? = IntentCompat.getParcelableExtra(intent, BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
                     if (device?.address == trackedDeviceAddress) {
                         connectionMonitor.notifyConnected()
 

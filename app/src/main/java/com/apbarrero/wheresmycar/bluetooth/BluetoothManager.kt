@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import androidx.core.content.IntentCompat
 import timber.log.Timber
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
@@ -61,7 +62,7 @@ class BluetoothManager(private val context: Context) {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 BluetoothDevice.ACTION_FOUND -> {
-                    val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                    val device: BluetoothDevice? = IntentCompat.getParcelableExtra(intent, BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
                     device?.let { bluetoothDevice ->
                         if (hasBluetoothPermissions()) {
                             val deviceInfo = BluetoothDeviceInfo(
@@ -90,13 +91,13 @@ class BluetoothManager(private val context: Context) {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 BluetoothDevice.ACTION_ACL_CONNECTED -> {
-                    val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                    val device: BluetoothDevice? = IntentCompat.getParcelableExtra(intent, BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
                     if (device?.address == trackedDeviceAddress) {
                         _connectionState.value = ConnectionState.Connected
                     }
                 }
                 BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
-                    val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                    val device: BluetoothDevice? = IntentCompat.getParcelableExtra(intent, BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
                     if (device?.address == trackedDeviceAddress) {
                         _connectionState.value = ConnectionState.Disconnected
                     }
