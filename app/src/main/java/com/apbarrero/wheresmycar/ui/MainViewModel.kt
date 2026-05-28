@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
  */
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     
-    private val repository = Repository(application)
+    private val repository = Repository.create(application)
     private val bluetoothManager = BluetoothManager(application)
     
     /**

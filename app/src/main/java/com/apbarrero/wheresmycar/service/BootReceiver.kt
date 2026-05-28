@@ -20,7 +20,7 @@ class BootReceiver : BroadcastReceiver() {
                 val pendingResult = goAsync()
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val settings = Repository(context).appSettings.first()
+                        val settings = Repository.create(context).appSettings.first()
                         val address = settings.selectedDeviceAddress
                         val name = settings.selectedDeviceName
                         if (settings.isTrackingEnabled && address != null && name != null) {

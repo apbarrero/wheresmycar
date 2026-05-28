@@ -43,7 +43,7 @@ class ServiceRestartJob : JobService() {
     override fun onStartJob(params: JobParameters?): Boolean {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val settings = Repository(this@ServiceRestartJob).appSettings.first()
+                val settings = Repository.create(this@ServiceRestartJob).appSettings.first()
                 val address = settings.selectedDeviceAddress
                 val name = settings.selectedDeviceName
                 if (settings.isTrackingEnabled &&

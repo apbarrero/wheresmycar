@@ -110,7 +110,7 @@ class ParkingTrackingService : Service() {
     
     override fun onCreate() {
         super.onCreate()
-        repository = Repository(this)
+        repository = Repository.create(this)
         locationManager = LocationManager(this)
         
         // Initialize Bluetooth adapter and connection checker
