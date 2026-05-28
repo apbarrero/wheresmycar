@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import timber.log.Timber
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import com.apbarrero.wheresmycar.data.BluetoothDeviceInfo
@@ -214,8 +215,8 @@ class BluetoothManager(private val context: Context) {
             stopDiscovery()
             context.unregisterReceiver(discoveryReceiver)
             context.unregisterReceiver(connectionReceiver)
-        } catch (e: Exception) {
-            // Receiver might already be unregistered
+        } catch (e: IllegalArgumentException) {
+            Timber.w(e, "Bluetooth receiver was already unregistered")
         }
     }
 }

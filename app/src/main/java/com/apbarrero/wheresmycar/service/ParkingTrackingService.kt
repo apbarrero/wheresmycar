@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import com.apbarrero.wheresmycar.bluetooth.BluetoothConnectionMonitor
 import com.apbarrero.wheresmycar.bluetooth.SystemBluetoothConnectionChecker
+import timber.log.Timber
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -202,8 +203,8 @@ class ParkingTrackingService : Service() {
         // Unregister receiver
         try {
             unregisterReceiver(bluetoothReceiver)
-        } catch (e: Exception) {
-            // Receiver might already be unregistered
+        } catch (e: IllegalArgumentException) {
+            Timber.w(e, "Bluetooth receiver was already unregistered")
         }
         
         // Remove from running services
@@ -264,7 +265,7 @@ class ParkingTrackingService : Service() {
                 val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.notify(NOTIFICATION_ID, updatedNotification)
             } catch (e: Exception) {
-                // Log error or show notification about failure
+                Timber.e(e, "Failed to save parking location")
             }
         }
     }
@@ -376,7 +377,7 @@ class ParkingTrackingService : Service() {
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                 } catch (e: Exception) {
-                    // Failed to open battery optimization settings
+                    Timber.w(e, "Could not open battery optimization settings")
                 }
             }
         }
@@ -416,7 +417,7 @@ class ParkingTrackingService : Service() {
                     )
                 }
             } catch (e: SecurityException) {
-                // SCHEDULE_EXACT_ALARM permission not granted
+                Timber.w(e, "SCHEDULE_EXACT_ALARM permission not granted; service restart alarm skipped")
             }
         }
     }

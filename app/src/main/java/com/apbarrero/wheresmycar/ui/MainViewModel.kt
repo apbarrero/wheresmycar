@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.apbarrero.wheresmycar.bluetooth.BluetoothManager
 import com.apbarrero.wheresmycar.data.AppSettings
+import timber.log.Timber
 import com.apbarrero.wheresmycar.data.BluetoothDeviceInfo
 import com.apbarrero.wheresmycar.data.Repository
 import com.apbarrero.wheresmycar.service.ParkingTrackingService
@@ -120,6 +121,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 _uiState.value = _uiState.value.copy(showDeviceSelection = false)
                 
             } catch (e: Exception) {
+                Timber.e(e, "Failed to select device")
                 _uiState.value = _uiState.value.copy(
                     errorMessage = "Failed to select device: ${e.message}"
                 )
