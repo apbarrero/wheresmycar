@@ -19,8 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.apbarrero.wheresmycar.data.ParkingLocation
 import com.google.accompanist.permissions.*
-import java.text.SimpleDateFormat
-import java.util.*
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -274,7 +275,10 @@ private fun MainContent(
 
 @Composable
 private fun LastParkingLocationCard(location: ParkingLocation) {
-    val dateFormat = remember { SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault()) }
+    val dateFormat = remember {
+        DateTimeFormatter.ofPattern("MMM dd, yyyy 'at' h:mm a", Locale.getDefault())
+            .withZone(ZoneId.systemDefault())
+    }
     val context = LocalContext.current
     
     Card(

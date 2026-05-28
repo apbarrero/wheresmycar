@@ -23,7 +23,7 @@ import com.apbarrero.wheresmycar.data.Repository
 import com.apbarrero.wheresmycar.location.LocationManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
-import java.util.*
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -246,7 +246,7 @@ class ParkingTrackingService : Service() {
                 val parkingLocation = ParkingLocation(
                     latitude = location.latitude,
                     longitude = location.longitude,
-                    timestamp = Date(),
+                    timestamp = Instant.now(),
                     deviceName = deviceName
                 )
                 repository.saveParkingLocation(parkingLocation)

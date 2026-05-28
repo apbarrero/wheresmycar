@@ -11,7 +11,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.util.Date
+import java.time.Instant
 
 // Create DataStore instance
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_settings")
@@ -44,7 +44,7 @@ class Repository(private val context: Context) {
             ParkingLocation(
                 latitude = preferences[PreferencesKeys.LAST_LATITUDE]!!,
                 longitude = preferences[PreferencesKeys.LAST_LONGITUDE]!!,
-                timestamp = Date(preferences[PreferencesKeys.LAST_TIMESTAMP]!!),
+                timestamp = Instant.ofEpochMilli(preferences[PreferencesKeys.LAST_TIMESTAMP]!!),
                 deviceName = preferences[PreferencesKeys.LAST_DEVICE_NAME]!!,
                 address = preferences[PreferencesKeys.LAST_ADDRESS]
             )
@@ -90,7 +90,7 @@ class Repository(private val context: Context) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.LAST_LATITUDE] = location.latitude
             preferences[PreferencesKeys.LAST_LONGITUDE] = location.longitude
-            preferences[PreferencesKeys.LAST_TIMESTAMP] = location.timestamp.time
+            preferences[PreferencesKeys.LAST_TIMESTAMP] = location.timestamp.toEpochMilli()
             preferences[PreferencesKeys.LAST_DEVICE_NAME] = location.deviceName
             location.address?.let { 
                 preferences[PreferencesKeys.LAST_ADDRESS] = it 

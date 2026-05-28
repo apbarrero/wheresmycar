@@ -1,6 +1,6 @@
 package com.apbarrero.wheresmycar.data
 
-import java.util.Date
+import java.time.Instant
 
 /**
  * Represents a Bluetooth device that can be tracked
@@ -17,7 +17,7 @@ data class BluetoothDeviceInfo(
 data class ParkingLocation(
     val latitude: Double,
     val longitude: Double,
-    val timestamp: Date,
+    val timestamp: Instant,
     val deviceName: String,
     val address: String? = null // Human-readable address if available
 )
