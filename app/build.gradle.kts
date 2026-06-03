@@ -14,12 +14,12 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "com.apbarrero.wheresmycar"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.apbarrero.wheresmycar"
         minSdk = 26
-        targetSdk = 34  // Use stable API level
+        targetSdk = 35
         versionCode = (findProperty("versionCode") as String?)?.toInt() ?: 1
         versionName = (findProperty("versionName") as String?) ?: "1.0.0"
 
