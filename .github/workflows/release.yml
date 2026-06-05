@@ -39,6 +39,18 @@ jobs:
           printf 'storeFile=../wheresmycar-release.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
             "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > keystore.properties
 
+      - name: Verify keystore
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          ls -lh "$GITHUB_WORKSPACE/wheresmycar-release.jks"
+          keytool -list \
+            -keystore "$GITHUB_WORKSPACE/wheresmycar-release.jks" \
+            -storepass "$KEYSTORE_PASSWORD" \
+            -noprompt && echo "Keystore OK" || echo "Keystore FAILED"
+          echo "--- keystore.properties ---"
+          cat keystore.properties
+
       - name: Write Play Store credentials
         run: |
           echo '${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}' > play-service-account.json
